@@ -1,0 +1,47 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+  body {
+    @apply text-espresso;
+  }
+  * {
+    @apply box-border;
+  }
+}
+
+@layer components {
+  .btn-gold {
+    @apply bg-gold text-espresso font-semibold px-8 py-4 rounded-none
+           hover:bg-gold-light transition-all duration-300
+           tracking-widest uppercase text-sm cursor-pointer;
+  }
+  .btn-outline-gold {
+    @apply border border-gold text-gold font-semibold px-8 py-4 rounded-none
+           hover:bg-gold hover:text-espresso transition-all duration-300
+           tracking-widest uppercase text-sm cursor-pointer;
+  }
+  .section-padding {
+    @apply py-24 px-6 md:px-12 lg:px-24;
+  }
+  .gold-underline {
+    @apply relative after:absolute after:bottom-0 after:left-0 after:h-px
+           after:bg-gold after:w-0 hover:after:w-full after:transition-all after:duration-300;
+  }
+}
+
+@layer utilities {
+  .text-gradient-gold {
+    @apply bg-gradient-to-r from-gold to-gold-light bg-clip-text text-transparent;
+  }
+}
+
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: #F5EFE0; }
+::-webkit-scrollbar-thumb { background: #D4A574; }
+::-webkit-scrollbar-thumb:hover { background: #9B4A2F; }
+::selection { background: #D4A574; color: #2A1810; }
