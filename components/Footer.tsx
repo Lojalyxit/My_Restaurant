@@ -14,7 +14,11 @@ export default function Footer() {
     e.preventDefault()
     if (!email) return
     setLoading(true)
-    await supabase.from('newsletter_subscribers').insert({ email })
+    await fetch('/api/newsletter', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email }),
+    })
     setEmail('')
     setLoading(false)
     toast.success('✓ Bienvenue dans la famille Louise !')

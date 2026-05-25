@@ -45,17 +45,21 @@ export default function CheckoutModal({ isOpen, onClose }: { isOpen: boolean; on
     setLoading(true)
     const num = `LOU-2026-${String(Math.floor(Math.random() * 9000) + 1000)}`
     const addr = form2.getValues()
-    await supabase.from('orders').insert({
-      order_number: num,
-      customer_name: step1Data.name,
-      customer_phone: step1Data.phone,
-      customer_email: step1Data.email,
-      delivery_address: addr.street,
-      delivery_district: addr.district,
-      delivery_city: addr.city,
-      delivery_instructions: addr.instructions || '',
-      subtotal, delivery_fee: 2.90, total, status: 'pending',
-      items: items.map((i) => ({ menu_item_id: i.id, menu_item_name: i.name, quantity: i.quantity, unit_price: i.price, total_price: i.price * i.quantity })),
+    await fetch('/api/orders', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        order_number: num,
+        customer_name: step1Data.name,
+        customer_phone: step1Data.phone,
+        customer_email: step1Data.email,
+        delivery_address: addr.street,
+        delivery_district: addr.district,
+        delivery_city: addr.city,
+        delivery_instructions: addr.instructions || '',
+        subtotal, delivery_fee: 2.90, total, status: 'pending',
+        items: items.map((i) => ({ menu_item_id: i.id, menu_item_name: i.name, quantity: i.quantity, unit_price: i.price, total_price: i.price * i.quantity })),
+      }),
     })
     setOrderNumber(num)
     clearCart()

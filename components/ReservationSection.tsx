@@ -35,10 +35,14 @@ export default function ReservationSection() {
 
   const onSubmit = async (data: FormData) => {
     setLoading(true)
-    await supabase.from('reservations').insert({
-      name: data.name, email: data.email, phone: data.phone,
-      date: data.date, time: data.time, guests: data.guests,
-      message: data.message || '', status: 'pending',
+    await fetch('/api/reservations', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        name: data.name, email: data.email, phone: data.phone,
+        date: data.date, time: data.time, guests: data.guests,
+        message: data.message || '', status: 'pending',
+      }),
     })
     setLoading(false)
     setSuccess(true)
