@@ -11,6 +11,7 @@ import ContactSection from '@/components/ContactSection'
 import Footer from '@/components/Footer'
 import CartSidebar from '@/components/CartSidebar'
 import ScrollToTop from '@/components/ScrollToTop'
+import WhatsAppButton from '@/components/WhatsAppButton'
 
 export default function Home() {
   return (
@@ -30,6 +31,7 @@ export default function Home() {
       <Footer />
       <CartSidebar />
       <ScrollToTop />
+      <WhatsAppButton />
     </>
   )
 }
