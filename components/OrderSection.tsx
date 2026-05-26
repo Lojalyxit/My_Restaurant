@@ -188,7 +188,7 @@ export default function OrderSection() {
             >
               {[
                 { value: "30-45'", label: 'Délai livraison' },
-                { value: '2,90 €', label: 'Frais livraison' },
+                { value: '10 000 GNF', label: 'Frais livraison' },
                 { value: '7j/7', label: 'Disponibilité' },
               ].map((info, i) => (
                 <div key={info.label} className={`py-8 ${i === 1 ? 'border-x border-gold/20' : ''}`}>
