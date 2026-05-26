@@ -3,6 +3,10 @@ import { Resend } from 'resend'
 const resend = new Resend(process.env.RESEND_API_KEY)
 const TO = process.env.MANAGER_EMAIL!
 
+function gnf(amount: number): string {
+  return amount.toLocaleString('fr-FR') + ' GNF'
+}
+
 export async function sendOrderEmail(order: {
   order_number: string
   customer_name: string
@@ -21,13 +25,13 @@ export async function sendOrderEmail(order: {
     <tr>
       <td style="padding:8px 12px;border-bottom:1px solid #EAE0CC;font-family:Georgia,serif;">${i.menu_item_name}</td>
       <td style="padding:8px 12px;border-bottom:1px solid #EAE0CC;text-align:center;">${i.quantity}</td>
-      <td style="padding:8px 12px;border-bottom:1px solid #EAE0CC;text-align:right;color:#D4A574;font-weight:bold;">${(i.unit_price * i.quantity).toFixed(2)} €</td>
+      <td style="padding:8px 12px;border-bottom:1px solid #EAE0CC;text-align:right;color:#D4A574;font-weight:bold;">${gnf(i.unit_price * i.quantity)}</td>
     </tr>`).join('')
 
   await resend.emails.send({
     from: 'Louise Restaurant <onboarding@resend.dev>',
     to: TO,
-    subject: `🍽️ Commande ${order.order_number} — ${order.customer_name} (${order.total.toFixed(2)} €)`,
+    subject: `🍽️ Commande ${order.order_number} — ${order.customer_name} (${gnf(order.total)})`,
     html: `<!DOCTYPE html>
 <html><head><meta charset="utf-8"></head>
 <body style="margin:0;padding:0;background:#F5EFE0;font-family:Arial,sans-serif;">
@@ -67,11 +71,11 @@ export async function sendOrderEmail(order: {
       <tbody>${itemsHtml}</tbody>
     </table>
     <table style="width:100%;border-collapse:collapse;margin-top:12px;">
-      <tr><td style="padding:6px 0;color:#666;text-align:right;">Sous-total</td><td style="padding:6px 0;text-align:right;width:120px;">${order.subtotal.toFixed(2)} €</td></tr>
-      <tr><td style="padding:6px 0;color:#666;text-align:right;">Livraison</td><td style="padding:6px 0;text-align:right;">${order.delivery_fee.toFixed(2)} €</td></tr>
+      <tr><td style="padding:6px 0;color:#666;text-align:right;">Sous-total</td><td style="padding:6px 0;text-align:right;width:160px;">${gnf(order.subtotal)}</td></tr>
+      <tr><td style="padding:6px 0;color:#666;text-align:right;">Livraison</td><td style="padding:6px 0;text-align:right;">${gnf(order.delivery_fee)}</td></tr>
       <tr style="background:#2A1810;">
         <td style="padding:12px 16px;color:#D4A574;text-align:right;font-family:Georgia,serif;font-size:18px;">TOTAL</td>
-        <td style="padding:12px 16px;color:#D4A574;text-align:right;font-family:Georgia,serif;font-size:22px;font-weight:bold;">${order.total.toFixed(2)} €</td>
+        <td style="padding:12px 16px;color:#D4A574;text-align:right;font-family:Georgia,serif;font-size:22px;font-weight:bold;">${gnf(order.total)}</td>
       </tr>
     </table>
     <div style="margin-top:20px;background:#2D5F4E;padding:12px;text-align:center;border-radius:4px;">
