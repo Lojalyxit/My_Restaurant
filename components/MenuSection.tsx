@@ -1,7 +1,8 @@
 'use client'
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Plus, Star, UtensilsCrossed } from 'lucide-react'
+import Image from 'next/image'
+import { Plus, Star } from 'lucide-react'
 import { useCartStore } from '@/store/cartStore'
 import { toast } from 'sonner'
 
@@ -10,7 +11,6 @@ const CATEGORIES = [
   { key: 'grillades', label: 'Grillades' },
   { key: 'sauces', label: 'Sauces & Soupes' },
   { key: 'accompagnements', label: 'Accompagnements' },
-  { key: 'boissons', label: 'Boissons' },
   { key: 'desserts', label: 'Desserts' },
 ] as const
 
@@ -29,109 +29,146 @@ interface Plat {
 const PLATS: Plat[] = [
   // ── Plats Signatures ──
   {
-    id: 's1', name: 'Riz Gras au Poisson', category: 'signatures', is_signature: true, price: 85000,
-    description: 'Riz cuit dans un bouillon riche, poisson fumé artisanal, légumes du marché, sauce tomate maison',
-    image_url: '',
+    id: 's1', category: 'signatures', is_signature: true, price: 120000,
+    name: 'Thiéboudienne Royal',
+    description: 'Riz rouge au poisson entier, carottes, aubergines et légumes confits, sauce tomate réduite — le grand classique',
+    image_url: '/thieboudienne-royal.jpg',
   },
   {
-    id: 's2', name: 'Sauce Feuilles & Riz', category: 'signatures', is_signature: true, price: 80000,
-    description: 'Feuilles de manioc pilées, poisson ou viande mijoté, riz blanc parfumé, piment doux',
-    image_url: '',
+    id: 's2', category: 'signatures', is_signature: true, price: 120000,
+    name: 'Poulet DG & Riz Jollof',
+    description: 'Poulet braisé croustillant, riz jollof épicé, alloco doré et salade fraîche — le trio incontournable',
+    image_url: '/poulet-dg-jollof.jpg',
   },
   {
-    id: 's3', name: 'Yassa Poulet', category: 'signatures', is_signature: true, price: 100000,
-    description: 'Poulet mariné aux oignons et citron vert, grillé puis mijoté, servi avec riz basmati',
-    image_url: '',
+    id: 's3', category: 'signatures', is_signature: true, price: 100000,
+    name: 'Riz Gras au Bœuf',
+    description: 'Riz cuit dans un bouillon parfumé, morceaux de bœuf fondants, aubergines et légumes du marché',
+    image_url: '/riz-gras-boeuf.jpg',
   },
   {
-    id: 's4', name: 'Poulet DG Grillé', category: 'signatures', is_signature: true, price: 120000,
-    description: 'Poulet de fermier grillé au feu de bois, banane plantain sautée, sauce tomate relevée aux épices',
-    image_url: '',
+    id: 's4', category: 'signatures', is_signature: true, price: 90000,
+    name: 'Sauce Feuilles & Foufou',
+    description: 'Feuilles de manioc pilées, poisson fumé et viande mijotés, servis avec foufou blanc moelleux',
+    image_url: '/sauce-feuilles-foufou.jpg',
   },
   // ── Grillades ──
   {
-    id: 'g1', name: 'Poisson Braisé Entier', category: 'grillades', is_signature: false, price: 150000,
-    description: 'Poisson frais entier mariné aux épices locales, grillé sur braises, servi avec oignons confits et citron',
-    image_url: '',
+    id: 'g1', category: 'grillades', is_signature: false, price: 150000,
+    name: 'Poisson Braisé Complet',
+    description: 'Poisson entier grillé au feu de bois, foufou blanc, légumes sautés et sauce piment maison',
+    image_url: '/poisson-braise-complet.jpg',
   },
   {
-    id: 'g2', name: 'Brochettes de Bœuf', category: 'grillades', is_signature: false, price: 75000,
-    description: 'Morceaux de bœuf tendre marinés, épices suya, oignons et poivrons grillés, sauce arachide',
-    image_url: '',
+    id: 'g2', category: 'grillades', is_signature: false, price: 140000,
+    name: 'Poisson Braisé & Couscous',
+    description: 'Poisson braisé entier sur lit de couscous de riz, salade fraîche et sauces variées',
+    image_url: '/poisson-couscous.jpg',
   },
   {
-    id: 'g3', name: 'Poulet Braisé & Légumes', category: 'grillades', is_signature: false, price: 110000,
-    description: 'Demi-poulet braisé lentement, légumes de saison, sauce piment maison, riz ou attiéké',
-    image_url: '',
+    id: 'g3', category: 'grillades', is_signature: false, price: 130000,
+    name: 'Poisson Braisé & Manioc',
+    description: 'Poisson épicé grillé, manioc bouilli, légumes frais et sauce tomate relevée au piment',
+    image_url: '/poisson-manioc.jpg',
+  },
+  {
+    id: 'g4', category: 'grillades', is_signature: false, price: 80000,
+    name: 'Poisson Épicé en Sauce',
+    description: 'Tranches de poisson marinées aux épices locales, mijotées en sauce tomate concentrée',
+    image_url: '/poisson-epice.jpg',
+  },
+  {
+    id: 'g5', category: 'grillades', is_signature: false, price: 85000,
+    name: 'Brochettes de Bœuf',
+    description: 'Brochettes de bœuf tendre grillées, poivrons colorés, oignons et tomates — sauce piment',
+    image_url: '/brochettes-boeuf.jpg',
   },
   // ── Sauces & Soupes ──
   {
-    id: 'sc1', name: 'Sauce Gombo & Foufou', category: 'sauces', is_signature: false, price: 70000,
-    description: 'Gombo frais mijoté avec viande ou poisson, épices locales, servi avec foufou de manioc',
-    image_url: '',
+    id: 'sc1', category: 'sauces', is_signature: false, price: 100000,
+    name: 'Sauce Arachide au Bœuf',
+    description: 'Morceaux de bœuf fondants dans une sauce arachide veloutée, piment habanero, servi avec riz blanc',
+    image_url: '/sauce-arachide.jpg',
   },
   {
-    id: 'sc2', name: 'Sauce Arachide & Riz', category: 'sauces', is_signature: false, price: 75000,
-    description: 'Pâte d\'arachide grillée, viande de bœuf ou mouton, tomates fraîches, épices guinéennes',
-    image_url: '',
+    id: 'sc2', category: 'sauces', is_signature: false, price: 90000,
+    name: 'Sauce Gombo aux Crevettes',
+    description: 'Gombo frais, épinards, crevettes royales et viande, sauce onctueuse aux épices africaines',
+    image_url: '/sauce-gombo-crevettes.jpg',
   },
   {
-    id: 'sc3', name: 'Sauce Palmiste & Riz', category: 'sauces', is_signature: false, price: 80000,
-    description: 'Noix de palme fraîche mijotée, poisson fumé et viande, assaisonnement traditionnel guinéen',
-    image_url: '',
+    id: 'sc3', category: 'sauces', is_signature: false, price: 85000,
+    name: 'Sauce Gombo & Foufou',
+    description: 'Sauce gombo aux fruits de mer et viande fumée, accompagnée de foufou blanc fraîchement pilé',
+    image_url: '/sauce-gombo-foufou.jpg',
+  },
+  {
+    id: 'sc4', category: 'sauces', is_signature: false, price: 90000,
+    name: 'Sauce Egusi & Foufou',
+    description: 'Sauce aux graines de courge pilées, légumes verts, viande et poisson fumé — goût authentique',
+    image_url: '/sauce-egusi.jpg',
+  },
+  {
+    id: 'sc5', category: 'sauces', is_signature: false, price: 95000,
+    name: 'Sauce Légumes & Viande',
+    description: 'Ragoût de viande aux légumes variés — carottes, gombo, tomates et épices du terroir',
+    image_url: '/sauce-legumes-viande.jpg',
+  },
+  {
+    id: 'sc6', category: 'sauces', is_signature: false, price: 95000,
+    name: 'Poisson en Sauce Tomate',
+    description: 'Poisson mijoté dans une sauce tomate riche aux piments, oignons confits, servi avec riz',
+    image_url: '/poisson-sauce-tomate.jpg',
+  },
+  {
+    id: 'sc7', category: 'sauces', is_signature: false, price: 80000,
+    name: 'Soupe de Tripes Spéciale',
+    description: 'Tripes, nids d\'abeilles et abats mijotés dans un bouillon épicé — spécialité de saison',
+    image_url: '/soupe-tripes.jpg',
   },
   // ── Accompagnements ──
   {
-    id: 'a1', name: 'Foufou Blanc', category: 'accompagnements', is_signature: false, price: 25000,
-    description: 'Foufou de manioc fraîchement pilé, texture lisse et aérienne, accompagnement idéal',
-    image_url: '',
+    id: 'a1', category: 'accompagnements', is_signature: false, price: 85000,
+    name: 'Nouilles Sautées au Bœuf',
+    description: 'Spaghetti sautés au wok, morceaux de bœuf, poivrons rouges et verts, carottes, sauce soja',
+    image_url: '/nouilles-boeuf.jpg',
   },
   {
-    id: 'a2', name: 'Attiéké Frais', category: 'accompagnements', is_signature: false, price: 30000,
-    description: 'Semoule de manioc fraîche, oignons et tomates en brunoise, vinaigrette citronnée légère',
-    image_url: '',
+    id: 'a2', category: 'accompagnements', is_signature: false, price: 90000,
+    name: 'Ragoût Bœuf & Légumes',
+    description: 'Morceaux de bœuf mijotés avec pommes de terre, tomates, carottes et épices maison',
+    image_url: '/ragout-boeuf.jpg',
   },
   {
-    id: 'a3', name: 'Riz Couscous', category: 'accompagnements', is_signature: false, price: 35000,
-    description: 'Couscous de riz à la vapeur, moelleux et parfumé, idéal avec toutes nos sauces',
-    image_url: '',
+    id: 'a3', category: 'accompagnements', is_signature: false, price: 75000,
+    name: 'Poivrons Farcis à la Viande',
+    description: 'Poivrons farcis de viande hachée épicée, haricots et sauce tomate — plat festif',
+    image_url: '/poivrons-farcis.jpg',
   },
   {
-    id: 'a4', name: 'Plantain Grillé', category: 'accompagnements', is_signature: false, price: 25000,
-    description: 'Banane plantain mûre grillée au beurre, légèrement caramélisée, sucrée et fondante',
-    image_url: '',
-  },
-  // ── Boissons ──
-  {
-    id: 'b1', name: 'Bissap Maison', category: 'boissons', is_signature: false, price: 15000,
-    description: 'Infusion d\'hibiscus artisanale, gingembre frais, menthe, sucre de canne naturel',
-    image_url: '',
-  },
-  {
-    id: 'b2', name: 'Jus de Gingembre', category: 'boissons', is_signature: false, price: 15000,
-    description: 'Gingembre frais pressé, citron vert, miel naturel, eau fraîche — vivifiant et sain',
-    image_url: '',
-  },
-  {
-    id: 'b3', name: 'Jus de Baobab', category: 'boissons', is_signature: false, price: 18000,
-    description: 'Pulpe de baobab fraîche, lait de coco, sucre naturel — riche en vitamine C',
-    image_url: '',
-  },
-  {
-    id: 'b4', name: 'Citronnade Maison', category: 'boissons', is_signature: false, price: 12000,
-    description: 'Citrons frais pressés, sucre de canne, eau pétillante ou plate, menthe fraîche',
-    image_url: '',
+    id: 'a4', category: 'accompagnements', is_signature: false, price: 30000,
+    name: 'Alloco (Plantain Frit)',
+    description: 'Rondelles de banane plantain mûre frites à l\'huile, caramélisées — croustillantes et fondantes',
+    image_url: '/alloco.jpg',
   },
   // ── Desserts ──
   {
-    id: 'd1', name: 'Salade de Fruits Tropicaux', category: 'desserts', is_signature: false, price: 20000,
-    description: 'Mangue, ananas, papaye, pastèque, citron vert, sucre vanillé et menthe fraîche',
-    image_url: '',
+    id: 'd1', category: 'desserts', is_signature: false, price: 25000,
+    name: 'Glace à la Fraise',
+    description: 'Boules de glace vanille et fraise, coulis de fraise maison, fraises fraîches — onctueux et frais',
+    image_url: '/glace-fraise.jpg',
   },
   {
-    id: 'd2', name: 'Mangue Fraîche & Citron', category: 'desserts', is_signature: false, price: 15000,
-    description: 'Mangues mûres des vergers locaux, zeste de citron vert, piment doux, fleur de sel',
-    image_url: '',
+    id: 'd2', category: 'desserts', is_signature: false, price: 20000,
+    name: 'Salade de Fruits à la Crème',
+    description: 'Fraises, myrtilles et fruits frais nappés d\'une crème légère vanillée — douceur maison',
+    image_url: '/salade-fruits-creme.jpg',
+  },
+  {
+    id: 'd3', category: 'desserts', is_signature: false, price: 18000,
+    name: 'Salade de Fruits Frais',
+    description: 'Banane, orange, fraise, raisin et fruits de saison, sirop léger au citron et à la menthe',
+    image_url: '/salade-fruits-frais.jpg',
   },
 ]
 
@@ -158,15 +195,17 @@ function MenuCard({ item }: { item: Plat }) {
       exit={{ opacity: 0 }}
       className="group bg-white border border-ivory-dark hover:border-gold/50 transition-all duration-300 overflow-hidden"
     >
-      <div className="relative h-56 overflow-hidden bg-espresso flex items-center justify-center">
-        <div className="absolute inset-0 bg-gradient-to-br from-espresso via-espresso-light to-terracotta/30" />
-        <div className="relative z-10 flex flex-col items-center gap-3 opacity-30 group-hover:opacity-50 transition-opacity duration-300">
-          <UtensilsCrossed size={40} className="text-gold" />
-          <p className="text-gold font-playfair italic text-sm">Photo à venir</p>
-        </div>
+      <div className="relative h-56 overflow-hidden">
+        <Image
+          src={item.image_url}
+          alt={item.name}
+          fill
+          className="object-cover transition-transform duration-700 group-hover:scale-110"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-espresso/60 via-transparent to-transparent" />
         {item.is_signature && (
-          <div className="absolute top-4 left-4 bg-gold text-espresso text-xs font-semibold px-3 py-1 tracking-wider uppercase flex items-center gap-1 z-10">
-            <Star size={10} fill="currentColor" /> Signature de Louise
+          <div className="absolute top-4 left-4 bg-gold text-espresso text-xs font-semibold px-3 py-1 tracking-wider uppercase flex items-center gap-1">
+            <Star size={10} fill="currentColor" /> Signature
           </div>
         )}
       </div>
@@ -174,7 +213,7 @@ function MenuCard({ item }: { item: Plat }) {
         <h3 className="font-playfair text-xl text-espresso mb-2">{item.name}</h3>
         <p className="text-espresso/60 text-sm leading-relaxed mb-4 font-inter">{item.description}</p>
         <div className="flex items-center justify-between">
-          <span className="text-gold font-playfair text-xl">{formatGNF(item.price)}</span>
+          <span className="text-gold font-playfair text-xl font-bold">{formatGNF(item.price)}</span>
           <motion.button
             onClick={handleAdd}
             whileTap={{ scale: 0.95 }}
@@ -193,7 +232,6 @@ function MenuCard({ item }: { item: Plat }) {
 
 export default function MenuSection() {
   const [activeCategory, setActiveCategory] = useState<Category>('signatures')
-
   const filtered = PLATS.filter(i => i.category === activeCategory)
 
   return (
@@ -205,7 +243,7 @@ export default function MenuSection() {
             La Carte de <em className="text-gold">Louise</em>
           </h2>
           <p className="text-ivory/60 max-w-2xl mx-auto font-inter">
-            Des spécialités guinéennes et africaines préparées chaque jour avec des ingrédients frais du marché.
+            Spécialités guinéennes et africaines préparées chaque jour avec des ingrédients frais du marché.
           </p>
         </div>
 
@@ -219,7 +257,11 @@ export default function MenuSection() {
               }`}
             >
               {activeCategory === cat.key && (
-                <motion.div layoutId="activeTab" className="absolute inset-0 bg-gold" transition={{ type: 'spring', bounce: 0.2, duration: 0.4 }} />
+                <motion.div
+                  layoutId="activeTab"
+                  className="absolute inset-0 bg-gold"
+                  transition={{ type: 'spring', bounce: 0.2, duration: 0.4 }}
+                />
               )}
               <span className="relative z-10">{cat.label}</span>
             </button>
