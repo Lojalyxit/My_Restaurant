@@ -4,9 +4,9 @@ import { motion, useInView } from 'framer-motion'
 import { MapPin, Phone, Mail, Clock, MessageCircle, Instagram, Facebook } from 'lucide-react'
 
 const contacts = [
-  { icon: MapPin, title: 'Adresse', content: '12 Rue de la Gastronomie\n75011 Paris, France' },
-  { icon: Phone, title: 'Téléphone', content: '+33 1 42 00 00 00', href: 'tel:+33142000000' },
-  { icon: MessageCircle, title: 'WhatsApp Livraison', content: '+33 1 42 00 00 01', href: 'https://wa.me/33142000001' },
+  { icon: MapPin, title: 'Adresse', content: 'Dapompa Plateau, Rue T8\nTombolia, Conakry — Guinée' },
+  { icon: Phone, title: 'Téléphone', content: '+224 622 36 54 20', href: 'tel:+224622365420' },
+  { icon: MessageCircle, title: 'WhatsApp Livraison', content: '+224 622 36 54 20', href: 'https://wa.me/224622365420' },
   { icon: Mail, title: 'Email', content: 'bonjour@restaurant-louise.com', href: 'mailto:bonjour@restaurant-louise.com' },
 ]
 
@@ -66,16 +66,36 @@ export default function ContactSection() {
             </div>
           </motion.div>
 
-          <motion.div initial={{ opacity: 0, x: 30 }} animate={isInView ? { opacity: 1, x: 0 } : {}} transition={{ duration: 0.8, delay: 0.2 }} className="h-[500px] relative overflow-hidden">
-            <iframe
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2624.9916256937595!2d2.3522219!3d48.8566101!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x47e66e1f06e2b70f%3A0x40b82c3688c9460!2sParis%2C%20France!5e0!3m2!1sen!2s!4v1234567890"
-              width="100%" height="100%"
-              style={{ border: 0 }}
-              allowFullScreen loading="lazy"
-              referrerPolicy="no-referrer-when-downgrade"
-              title="Louise Restaurant"
-            />
-            <div className="absolute inset-0 pointer-events-none border-2 border-gold/30" />
+          <motion.div initial={{ opacity: 0, x: 30 }} animate={isInView ? { opacity: 1, x: 0 } : {}} transition={{ duration: 0.8, delay: 0.2 }} className="relative overflow-hidden">
+            <div className="h-[400px] relative">
+              <iframe
+                src="https://maps.google.com/maps?q=Tombolia+Conakry+Guinee&z=15&output=embed"
+                width="100%" height="100%"
+                style={{ border: 0 }}
+                allowFullScreen loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+                title="Louise Restaurant — Dapompa Plateau, Tombolia, Conakry"
+              />
+              <div className="absolute inset-0 pointer-events-none border-2 border-gold/30" />
+            </div>
+            <div className="bg-espresso p-6 flex items-start gap-4">
+              <MapPin className="text-gold flex-shrink-0 mt-1" size={20} />
+              <div>
+                <p className="text-gold font-playfair text-lg mb-1">Louise Restaurant</p>
+                <p className="text-ivory/70 font-inter text-sm leading-relaxed">
+                  Dapompa Plateau, Rue T8 — Commune de Tombolia<br />
+                  Conakry, République de Guinée
+                </p>
+                <a
+                  href="https://maps.google.com/maps?q=Tombolia+Conakry+Guinee"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-block mt-3 text-gold border border-gold/40 px-4 py-2 text-xs font-inter tracking-widest uppercase hover:bg-gold hover:text-espresso transition-colors"
+                >
+                  Ouvrir dans Google Maps
+                </a>
+              </div>
+            </div>
           </motion.div>
         </div>
       </div>

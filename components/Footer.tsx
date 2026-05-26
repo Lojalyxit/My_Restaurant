@@ -64,8 +64,9 @@ export default function Footer() {
           <div>
             <h4 className="font-playfair text-gold text-xl mb-6">Contact</h4>
             <div className="space-y-3 text-ivory/60 font-inter text-sm">
-              <p>12 Rue de la Gastronomie<br />75011 Paris</p>
-              <a href="tel:+33142000000" className="block hover:text-gold transition-colors">+33 1 42 00 00 00</a>
+              <p>Dapompa Plateau, Rue T8<br />Tombolia, Conakry — Guinée</p>
+              <a href="tel:+224622365420" className="block hover:text-gold transition-colors">+224 622 36 54 20</a>
+              <a href="https://wa.me/224622365420" target="_blank" rel="noopener noreferrer" className="block hover:text-gold transition-colors">WhatsApp Livraison : +224 622 36 54 20</a>
               <a href="mailto:bonjour@restaurant-louise.com" className="block hover:text-gold transition-colors">bonjour@restaurant-louise.com</a>
             </div>
           </div>
