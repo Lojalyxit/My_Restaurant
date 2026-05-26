@@ -8,34 +8,40 @@ type Tab = 'plats' | 'jus' | 'fruits'
 
 const MENU: Record<Tab, { id: string; name: string; price: number; emoji: string }[]> = {
   plats: [
-    { id: 'p1', name: 'Poulet Yassa', price: 18.50, emoji: '🍗' },
-    { id: 'p2', name: 'Thiéboudienne', price: 22.00, emoji: '🍚' },
-    { id: 'p3', name: 'Mafé Boeuf', price: 20.00, emoji: '🥩' },
-    { id: 'p4', name: 'Brochettes Poisson', price: 16.00, emoji: '🐟' },
-    { id: 'p5', name: 'Attieké Poulet', price: 17.00, emoji: '🍽️' },
-    { id: 'p6', name: 'Plantain Grillé', price: 8.50, emoji: '🌿' },
+    { id: 'p1', name: 'Riz Gras au Poisson', price: 85000, emoji: '🍚' },
+    { id: 'p2', name: 'Sauce Feuilles & Riz', price: 80000, emoji: '🥬' },
+    { id: 'p3', name: 'Yassa Poulet', price: 100000, emoji: '🍗' },
+    { id: 'p4', name: 'Poulet DG Grillé', price: 120000, emoji: '🔥' },
+    { id: 'p5', name: 'Sauce Gombo & Foufou', price: 70000, emoji: '🍲' },
+    { id: 'p6', name: 'Sauce Arachide & Riz', price: 75000, emoji: '🥜' },
+    { id: 'p7', name: 'Sauce Palmiste & Riz', price: 80000, emoji: '🌴' },
+    { id: 'p8', name: 'Poisson Braisé Entier', price: 150000, emoji: '🐟' },
+    { id: 'p9', name: 'Brochettes de Bœuf', price: 75000, emoji: '🥩' },
+    { id: 'p10', name: 'Poulet Braisé & Légumes', price: 110000, emoji: '🍖' },
   ],
   jus: [
-    { id: 'j1', name: 'Bissap', price: 4.50, emoji: '🌺' },
-    { id: 'j2', name: 'Gingembre', price: 4.50, emoji: '🫚' },
-    { id: 'j3', name: 'Jus Baobab', price: 5.00, emoji: '🥛' },
-    { id: 'j4', name: 'Tamarin', price: 4.50, emoji: '🍹' },
-    { id: 'j5', name: 'Citronnade', price: 4.00, emoji: '🍋' },
-    { id: 'j6', name: 'Jus Bouye', price: 5.00, emoji: '🌾' },
+    { id: 'j1', name: 'Bissap Maison', price: 15000, emoji: '🌺' },
+    { id: 'j2', name: 'Jus de Gingembre', price: 15000, emoji: '🫚' },
+    { id: 'j3', name: 'Jus de Baobab', price: 18000, emoji: '🥛' },
+    { id: 'j4', name: 'Citronnade Maison', price: 12000, emoji: '🍋' },
   ],
   fruits: [
-    { id: 'f1', name: 'Mangue', price: 6.00, emoji: '🥭' },
-    { id: 'f2', name: 'Ananas', price: 7.00, emoji: '🍍' },
-    { id: 'f3', name: 'Pastèque', price: 6.50, emoji: '🍉' },
-    { id: 'f4', name: 'Papaye', price: 6.00, emoji: '🍈' },
-    { id: 'f5', name: 'Banane Plantain', price: 5.00, emoji: '🍌' },
-    { id: 'f6', name: 'Fruit de la Passion', price: 7.50, emoji: '💛' },
+    { id: 'f1', name: 'Mangue Fraîche', price: 15000, emoji: '🥭' },
+    { id: 'f2', name: 'Salade Tropicale', price: 20000, emoji: '🍍' },
+    { id: 'f3', name: 'Foufou Blanc', price: 25000, emoji: '⚪' },
+    { id: 'f4', name: 'Attiéké Frais', price: 30000, emoji: '🌾' },
+    { id: 'f5', name: 'Plantain Grillé', price: 25000, emoji: '🍌' },
+    { id: 'f6', name: 'Riz Couscous', price: 35000, emoji: '🍽️' },
   ],
 }
 
-const TIME_SLOTS = ['12:00', '12:30', '13:00', '13:30', '14:00', '19:00', '19:30', '20:00', '20:30', '21:00', '21:30']
-const DELIVERY_FEE = 2.90
-const MIN_ORDER = 20
+const TIME_SLOTS = ['11:30', '12:00', '12:30', '13:00', '13:30', '14:00', '18:00', '18:30', '19:00', '19:30', '20:00', '20:30', '21:00', '21:30', '22:00']
+const DELIVERY_FEE = 10000
+const MIN_ORDER = 50000
+
+function formatGNF(price: number) {
+  return price.toLocaleString('fr-FR') + ' GNF'
+}
 
 const inputCls = 'w-full bg-white/5 border border-white/10 px-4 py-3 text-ivory placeholder-ivory/30 focus:outline-none focus:border-gold transition-colors font-inter text-sm'
 
@@ -73,7 +79,7 @@ export default function OrderSection() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (selectedItems.length === 0) { toast.error('Sélectionnez au moins un article'); return }
-    if (subtotal < MIN_ORDER) { toast.error(`Minimum de commande : ${MIN_ORDER} €`); return }
+    if (subtotal < MIN_ORDER) { toast.error(`Minimum de commande : ${formatGNF(MIN_ORDER)}`); return }
     if (!address || !city) { toast.error('Adresse de livraison requise'); return }
     if (!timeSlot) { toast.error('Choisissez un horaire de livraison'); return }
     if (!name || !phone) { toast.error('Vos coordonnées sont requises'); return }
@@ -212,13 +218,13 @@ export default function OrderSection() {
                           <span>{item.emoji}</span>
                           <span>{item.name} × {quantities[item.id]}</span>
                         </span>
-                        <span className="text-gold font-semibold">{(item.price * quantities[item.id]).toFixed(2)} €</span>
+                        <span className="text-gold font-semibold">{formatGNF(item.price * quantities[item.id])}</span>
                       </div>
                     ))}
                   </div>
                   <div className="border-t border-gold/20 mt-4 pt-4 flex justify-between items-baseline">
                     <span className="font-playfair text-espresso">Total estimé</span>
-                    <span className="font-playfair text-gold text-2xl font-bold">{total.toFixed(2)} €</span>
+                    <span className="font-playfair text-gold text-2xl font-bold">{formatGNF(total)}</span>
                   </div>
                 </motion.div>
               )}
@@ -260,7 +266,7 @@ export default function OrderSection() {
                     <ShoppingBag className="text-gold" size={20} />
                     <h3 className="font-playfair italic text-gold text-2xl">Votre commande</h3>
                   </div>
-                  <p className="text-ivory/40 font-inter text-xs tracking-wide">Minimum {MIN_ORDER} € · Livraison {DELIVERY_FEE.toFixed(2)} €</p>
+                  <p className="text-ivory/40 font-inter text-xs tracking-wide">Minimum {formatGNF(MIN_ORDER)} · Livraison {formatGNF(DELIVERY_FEE)}</p>
                 </div>
 
                 {/* ── SECTION 1 : Choix des articles ── */}
@@ -318,7 +324,7 @@ export default function OrderSection() {
                               )}
                             </div>
                             <p className="text-ivory/90 font-inter text-[11px] leading-snug mb-1">{item.name}</p>
-                            <p className="text-gold font-playfair text-sm mb-3">{item.price.toFixed(2)} €</p>
+                            <p className="text-gold font-playfair text-sm mb-3">{formatGNF(item.price)}</p>
                             <div className="flex items-center gap-2">
                               <button
                                 type="button"
@@ -428,15 +434,15 @@ export default function OrderSection() {
                   <div className="space-y-1.5 mb-5">
                     <div className="flex justify-between text-ivory/50 font-inter text-sm">
                       <span>Sous-total</span>
-                      <span>{subtotal.toFixed(2)} €</span>
+                      <span>{formatGNF(subtotal)}</span>
                     </div>
                     <div className="flex justify-between text-ivory/50 font-inter text-sm">
                       <span>Livraison</span>
-                      <span>{subtotal > 0 ? `${DELIVERY_FEE.toFixed(2)} €` : '—'}</span>
+                      <span>{subtotal > 0 ? formatGNF(DELIVERY_FEE) : '—'}</span>
                     </div>
                     <div className="flex justify-between items-baseline border-t border-gold/20 pt-3 mt-3">
                       <span className="font-playfair text-ivory text-lg">Total</span>
-                      <span className="font-playfair text-gold text-3xl font-bold">{total.toFixed(2)} €</span>
+                      <span className="font-playfair text-gold text-3xl font-bold">{formatGNF(total)}</span>
                     </div>
                   </div>
 
