@@ -1,21 +1,23 @@
 'use client'
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { X, Heart, CheckCircle } from 'lucide-react'
+import { X, Heart, CheckCircle, AlertCircle } from 'lucide-react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { useCartStore } from '@/store/cartStore'
+import { createOrder } from '@/lib/api'
+
+const DELIVERY_FEE = 2.90
 
 const step1Schema = z.object({
-  name: z.string().min(2, 'Nom requis'),
+  name:  z.string().min(2, 'Nom requis'),
   phone: z.string().min(8, 'Téléphone requis'),
   email: z.string().email('Email invalide'),
 })
 const step2Schema = z.object({
-  street: z.string().min(5, 'Adresse requise'),
-  district: z.string().min(2, 'Quartier requis'),
-  city: z.string().min(2, 'Ville requise'),
+  street:       z.string().min(3, 'Adresse requise'),
+  neighborhood: z.string().min(2, 'Quartier requis'),
   instructions: z.string().optional(),
 })
 type Step1Data = z.infer<typeof step1Schema>
@@ -23,15 +25,20 @@ type Step2Data = z.infer<typeof step2Schema>
 
 const inputCls = "w-full bg-ivory border border-ivory-dark px-4 py-3 font-inter text-espresso placeholder-espresso/40 focus:outline-none focus:border-gold transition-colors"
 
+function fmt(n: number) {
+  return n.toLocaleString('fr-FR', { minimumFractionDigits: 2 })
+}
+
 export default function CheckoutModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
   const [step, setStep] = useState(1)
   const [step1Data, setStep1Data] = useState<Step1Data | null>(null)
   const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState(false)
-  const [orderNumber, setOrderNumber] = useState('')
+  const [orderId, setOrderId] = useState<number | null>(null)
+  const [apiError, setApiError] = useState('')
   const { items, getSubtotal, clearCart } = useCartStore()
   const subtotal = getSubtotal()
-  const total = subtotal + 2.90
+  const total = subtotal + DELIVERY_FEE
 
   const form1 = useForm<Step1Data>({ resolver: zodResolver(step1Schema) })
   const form2 = useForm<Step2Data>({ resolver: zodResolver(step2Schema) })
@@ -42,32 +49,38 @@ export default function CheckoutModal({ isOpen, onClose }: { isOpen: boolean; on
   const handleConfirm = async () => {
     if (!step1Data) return
     setLoading(true)
-    const num = `LOU-2026-${String(Math.floor(Math.random() * 9000) + 1000)}`
+    setApiError('')
     const addr = form2.getValues()
-    await fetch('/api/orders', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        order_number: num,
-        customer_name: step1Data.name,
-        customer_phone: step1Data.phone,
-        customer_email: step1Data.email,
-        delivery_address: addr.street,
-        delivery_district: addr.district,
-        delivery_city: addr.city,
-        delivery_instructions: addr.instructions || '',
-        subtotal, delivery_fee: 2.90, total, status: 'pending',
-        items: items.map((i) => ({ menu_item_id: i.id, menu_item_name: i.name, quantity: i.quantity, unit_price: i.price, total_price: i.price * i.quantity })),
-      }),
-    })
-    setOrderNumber(num)
-    clearCart()
-    setLoading(false)
-    setSuccess(true)
+    try {
+      const order = await createOrder({
+        customer_name:          step1Data.name,
+        customer_phone:         step1Data.phone,
+        customer_email:         step1Data.email,
+        delivery_address:       addr.street,
+        delivery_neighborhood:  addr.neighborhood,
+        delivery_instructions:  addr.instructions || '',
+        subtotal:     subtotal.toFixed(2),
+        delivery_fee: DELIVERY_FEE.toFixed(2),
+        total:        total.toFixed(2),
+        items: items.map((i) => ({
+          menu_item:  parseInt(i.id, 10),
+          item_name:  i.name,
+          item_price: i.price.toFixed(2),
+          quantity:   i.quantity,
+        })),
+      })
+      setOrderId(order.id)
+      clearCart()
+      setSuccess(true)
+    } catch {
+      setApiError('Une erreur est survenue. Veuillez réessayer ou nous appeler.')
+    } finally {
+      setLoading(false)
+    }
   }
 
   const handleClose = () => {
-    setStep(1); setSuccess(false); setOrderNumber('')
+    setStep(1); setSuccess(false); setOrderId(null); setApiError('')
     form1.reset(); form2.reset(); onClose()
   }
 
@@ -84,13 +97,20 @@ export default function CheckoutModal({ isOpen, onClose }: { isOpen: boolean; on
           >
             <div className="bg-espresso p-6 flex items-center justify-between">
               <h2 className="font-playfair italic text-gold text-2xl">Finaliser ma commande</h2>
-              <button onClick={handleClose} className="text-ivory/60 hover:text-gold transition-colors"><X size={24} /></button>
+              <button onClick={handleClose} className="text-ivory/60 hover:text-gold transition-colors">
+                <X size={24} />
+              </button>
             </div>
 
             {!success && (
               <div className="flex bg-white border-b border-ivory-dark">
                 {['Coordonnées', 'Adresse', 'Confirmation'].map((s, i) => (
-                  <div key={s} className={`flex-1 py-4 text-center text-sm font-inter uppercase tracking-wider transition-colors ${step > i ? 'text-gold border-b-2 border-gold' : 'text-espresso/40'}`}>
+                  <div
+                    key={s}
+                    className={`flex-1 py-4 text-center text-sm font-inter uppercase tracking-wider transition-colors ${
+                      step > i ? 'text-gold border-b-2 border-gold' : 'text-espresso/40'
+                    }`}
+                  >
                     {s}
                   </div>
                 ))}
@@ -105,9 +125,11 @@ export default function CheckoutModal({ isOpen, onClose }: { isOpen: boolean; on
                   </motion.div>
                   <h3 className="font-playfair text-3xl text-espresso mb-4">Merci !</h3>
                   <p className="text-espresso/70 font-inter mb-4">Louise prépare votre commande avec amour.</p>
-                  <p className="text-gold font-playfair text-xl mb-8">Commande n° {orderNumber}</p>
+                  {orderId && (
+                    <p className="text-gold font-playfair text-xl mb-8">Commande n° {orderId}</p>
+                  )}
                   <p className="text-espresso/60 font-inter text-sm mb-8">
-                    Confirmation SMS sous quelques minutes.<br />Livraison estimée : 30-45 minutes.
+                    Confirmation SMS sous quelques minutes.<br />Livraison estimée : 30–45 minutes.
                   </p>
                   <button onClick={handleClose} className="btn-gold">Retour à Louise</button>
                 </div>
@@ -132,20 +154,19 @@ export default function CheckoutModal({ isOpen, onClose }: { isOpen: boolean; on
                 <form onSubmit={form2.handleSubmit(handleStep2)} className="space-y-6">
                   <h3 className="font-playfair text-2xl text-espresso">Adresse de livraison</h3>
                   <div>
-                    <input {...form2.register('street')} placeholder="Rue et numéro" className={inputCls} />
+                    <input {...form2.register('street')} placeholder="Rue / Adresse complète" className={inputCls} />
                     {form2.formState.errors.street && <p className="text-red-500 text-sm mt-1">{form2.formState.errors.street.message}</p>}
                   </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <input {...form2.register('district')} placeholder="Quartier" className={inputCls} />
-                      {form2.formState.errors.district && <p className="text-red-500 text-sm mt-1">{form2.formState.errors.district.message}</p>}
-                    </div>
-                    <div>
-                      <input {...form2.register('city')} placeholder="Ville" className={inputCls} />
-                      {form2.formState.errors.city && <p className="text-red-500 text-sm mt-1">{form2.formState.errors.city.message}</p>}
-                    </div>
+                  <div>
+                    <input {...form2.register('neighborhood')} placeholder="Quartier" className={inputCls} />
+                    {form2.formState.errors.neighborhood && <p className="text-red-500 text-sm mt-1">{form2.formState.errors.neighborhood.message}</p>}
                   </div>
-                  <textarea {...form2.register('instructions')} placeholder="Instructions de livraison (optionnel)" rows={3} className={inputCls} />
+                  <textarea
+                    {...form2.register('instructions')}
+                    placeholder="Instructions de livraison (optionnel)"
+                    rows={3}
+                    className={inputCls}
+                  />
                   <div className="flex gap-4">
                     <button type="button" onClick={() => setStep(1)} className="btn-outline-gold flex-1">Retour</button>
                     <button type="submit" className="btn-gold flex-1">Continuer</button>
@@ -158,21 +179,39 @@ export default function CheckoutModal({ isOpen, onClose }: { isOpen: boolean; on
                     {items.map((item) => (
                       <div key={item.id} className="flex justify-between text-espresso font-inter">
                         <span>{item.name} × {item.quantity}</span>
-                        <span>{(item.price * item.quantity).toFixed(2)} €</span>
+                        <span>{fmt(item.price * item.quantity)}</span>
                       </div>
                     ))}
                     <div className="border-t border-ivory-dark pt-3 space-y-1">
-                      <div className="flex justify-between text-espresso/70 font-inter text-sm"><span>Sous-total</span><span>{subtotal.toFixed(2)} €</span></div>
-                      <div className="flex justify-between text-espresso/70 font-inter text-sm"><span>Livraison</span><span>2.90 €</span></div>
-                      <div className="flex justify-between text-gold font-playfair text-xl font-bold mt-2"><span>Total</span><span>{total.toFixed(2)} €</span></div>
+                      <div className="flex justify-between text-espresso/70 font-inter text-sm">
+                        <span>Sous-total</span><span>{fmt(subtotal)}</span>
+                      </div>
+                      <div className="flex justify-between text-espresso/70 font-inter text-sm">
+                        <span>Livraison</span><span>{fmt(DELIVERY_FEE)}</span>
+                      </div>
+                      <div className="flex justify-between text-gold font-playfair text-xl font-bold mt-2">
+                        <span>Total</span><span>{fmt(total)}</span>
+                      </div>
                     </div>
                   </div>
+
+                  {apiError && (
+                    <div className="flex items-center gap-3 bg-red-50 border border-red-200 p-4 text-red-700 font-inter text-sm">
+                      <AlertCircle size={18} className="shrink-0" />
+                      {apiError}
+                    </div>
+                  )}
+
                   <div className="bg-jade/10 border border-jade/30 p-4 text-center">
                     <p className="text-jade font-inter text-sm">Paiement à la livraison · Cash ou Mobile Money</p>
                   </div>
                   <div className="flex gap-4">
                     <button onClick={() => setStep(2)} className="btn-outline-gold flex-1">Retour</button>
-                    <button onClick={handleConfirm} disabled={loading} className="btn-gold flex-1 flex items-center justify-center gap-2">
+                    <button
+                      onClick={handleConfirm}
+                      disabled={loading}
+                      className="btn-gold flex-1 flex items-center justify-center gap-2"
+                    >
                       {loading ? <span className="animate-spin">◌</span> : <><CheckCircle size={16} />Confirmer</>}
                     </button>
                   </div>

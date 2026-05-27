@@ -1,10 +1,7 @@
-// Re-exported from lib/api for convenience
-export type { MenuItem, CreateOrderPayload, OrderItemPayload, CreateReservationPayload } from '@/lib/api'
-
 export interface CartItem {
-  id: string
+  id: string       // String(MenuItem.id) from Django
   name: string
-  price: number
+  price: number    // parseFloat(MenuItem.price)
   quantity: number
   image_url: string
 }

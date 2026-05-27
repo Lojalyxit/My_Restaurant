@@ -5,21 +5,39 @@ import Image from 'next/image'
 import { Plus, Star } from 'lucide-react'
 import { useCartStore } from '@/store/cartStore'
 import { toast } from 'sonner'
-import { getMenu, MenuItem } from '@/lib/api'
+import { getMenu } from '@/lib/api'
+import type { MenuItem } from '@/types/api'
 
 const CATEGORY_LABELS: Record<string, string> = {
-  plats: 'Plats Signatures',
-  grillades: 'Grillades',
-  sauces: 'Sauces & Soupes',
+  plats:           'Plats Signatures',
+  grillades:       'Grillades',
+  sauces:          'Sauces & Soupes',
   accompagnements: 'Accompagnements',
-  desserts: 'Desserts',
-  entrees: 'Entrées',
-  boissons: 'Boissons',
-  signatures: 'Plats Signatures',
+  desserts:        'Desserts',
+  entrees:         'Entrées',
+  boissons:        'Boissons',
 }
 
-function formatGNF(price: number) {
-  return price.toLocaleString('fr-FR') + ' GNF'
+function formatPrice(price: string | number) {
+  const n = typeof price === 'string' ? parseFloat(price) : price
+  return n.toLocaleString('fr-FR') + ' GNF'
+}
+
+function MenuCardSkeleton() {
+  return (
+    <div className="bg-white border border-ivory-dark overflow-hidden animate-pulse">
+      <div className="h-56 bg-espresso/10" />
+      <div className="p-6 space-y-3">
+        <div className="h-5 bg-espresso/10 rounded w-3/4" />
+        <div className="h-3 bg-espresso/10 rounded w-full" />
+        <div className="h-3 bg-espresso/10 rounded w-2/3" />
+        <div className="flex justify-between items-center pt-2">
+          <div className="h-6 bg-espresso/10 rounded w-24" />
+          <div className="h-10 bg-espresso/10 rounded w-28" />
+        </div>
+      </div>
+    </div>
+  )
 }
 
 function MenuCard({ item }: { item: MenuItem }) {
@@ -28,7 +46,13 @@ function MenuCard({ item }: { item: MenuItem }) {
 
   const handleAdd = () => {
     setAdded(true)
-    addItem({ id: item.id, name: item.name, price: item.price, quantity: 1, image_url: item.image_url })
+    addItem({
+      id: String(item.id),
+      name: item.name,
+      price: parseFloat(item.price),
+      quantity: 1,
+      image_url: item.image,
+    })
     toast.success(`✓ ${item.name} ajouté à votre table`)
     setTimeout(() => setAdded(false), 1200)
   }
@@ -43,7 +67,7 @@ function MenuCard({ item }: { item: MenuItem }) {
     >
       <div className="relative h-56 overflow-hidden">
         <Image
-          src={item.image_url}
+          src={item.image}
           alt={item.name}
           fill
           className="object-cover transition-transform duration-700 group-hover:scale-110"
@@ -59,7 +83,7 @@ function MenuCard({ item }: { item: MenuItem }) {
         <h3 className="font-playfair text-xl text-espresso mb-2">{item.name}</h3>
         <p className="text-espresso/60 text-sm leading-relaxed mb-4 font-inter">{item.description}</p>
         <div className="flex items-center justify-between">
-          <span className="text-gold font-playfair text-xl font-bold">{formatGNF(item.price)}</span>
+          <span className="text-gold font-playfair text-xl font-bold">{formatPrice(item.price)}</span>
           <motion.button
             onClick={handleAdd}
             whileTap={{ scale: 0.95 }}
@@ -79,16 +103,16 @@ function MenuCard({ item }: { item: MenuItem }) {
 export default function MenuSection() {
   const [menuItems, setMenuItems] = useState<MenuItem[]>([])
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(false)
   const [activeCategory, setActiveCategory] = useState<string>('')
 
   useEffect(() => {
     getMenu()
       .then((data) => {
-        const available = data.filter((i) => i.is_available)
-        setMenuItems(available)
-        if (available.length > 0) setActiveCategory(available[0].category)
+        setMenuItems(data)
+        if (data.length > 0) setActiveCategory(data[0].category)
       })
-      .catch(console.error)
+      .catch(() => setError(true))
       .finally(() => setLoading(false))
   }, [])
 
@@ -111,13 +135,13 @@ export default function MenuSection() {
           </p>
         </div>
 
-        {loading ? (
-          <div className="text-center py-24">
-            <span className="text-gold text-4xl animate-spin inline-block">◌</span>
-          </div>
-        ) : menuItems.length === 0 ? (
+        {error ? (
           <div className="text-center py-24 text-ivory/50 font-inter">
-            Le menu est temporairement indisponible.
+            Le menu est temporairement indisponible. Veuillez réessayer.
+          </div>
+        ) : loading ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {Array.from({ length: 6 }).map((_, i) => <MenuCardSkeleton key={i} />)}
           </div>
         ) : (
           <>
