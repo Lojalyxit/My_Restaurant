@@ -6,7 +6,6 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { useCartStore } from '@/store/cartStore'
-import { supabase } from '@/lib/supabase'
 
 const step1Schema = z.object({
   name: z.string().min(2, 'Nom requis'),

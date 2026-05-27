@@ -4,7 +4,6 @@ import { motion, useInView } from 'framer-motion'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { supabase } from '@/lib/supabase'
 import { CheckCircle } from 'lucide-react'
 
 const schema = z.object({
