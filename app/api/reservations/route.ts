@@ -1,6 +1,14 @@
-// Reservations are now created directly via lib/api.ts → Django POST /reservations/
-// This route is kept as a stub in case a server-side email hook is needed later.
 import { NextResponse } from 'next/server'
-export async function POST() {
-  return NextResponse.json({ ok: true })
+
+const DJANGO = process.env.NEXT_PUBLIC_API_URL || 'http://35.172.107.240/api'
+
+export async function POST(request: Request) {
+  const body = await request.json()
+  const res = await fetch(`${DJANGO}/reservations/`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  })
+  const data = await res.json()
+  return NextResponse.json(data, { status: res.status })
 }
