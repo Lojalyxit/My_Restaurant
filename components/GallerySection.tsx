@@ -5,15 +5,15 @@ import Image from 'next/image'
 import { X, ChevronLeft, ChevronRight } from 'lucide-react'
 
 const images = [
-  { src: 'https://images.unsplash.com/photo-1565557623262-b51c2513a641?w=800&q=80', alt: 'Plat gastronomique africain' },
-  { src: 'https://images.unsplash.com/photo-1567521464027-f127ff144326?w=800&q=80', alt: 'Riz jollof élégant' },
-  { src: 'https://images.unsplash.com/photo-1544025162-d76694265947?w=800&q=80', alt: 'Grillades suya' },
-  { src: 'https://images.unsplash.com/photo-1574484284002-952d92456975?w=800&q=80', alt: 'Plat en sauce' },
-  { src: 'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=800&q=80', alt: 'Chef en cuisine' },
-  { src: 'https://images.unsplash.com/photo-1512058564366-18510be2db19?w=800&q=80', alt: 'Épices africaines' },
-  { src: 'https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?w=800&q=80', alt: 'Dessert plantain' },
-  { src: 'https://images.unsplash.com/photo-1544145945-f90425340c7e?w=800&q=80', alt: 'Boisson bissap' },
-  { src: 'https://images.unsplash.com/photo-1598514983318-2f64f8f4796c?w=800&q=80', alt: 'Poulet grillé' },
+  { src: '/gallery/553930667ae0469d00c1a881bf5c70b3.jpg', alt: 'Brochettes grillées' },
+  { src: '/gallery/8ee952f0165840d63e6496280cb20513.jpg', alt: 'Riz jollof poulet alloco' },
+  { src: '/gallery/f35335c6e9469387f4a69c4591f2c9b1.jpg', alt: 'Sauce crabe et boule' },
+  { src: '/gallery/8d538b45e278639a26785a7a6ec9f782.jpg', alt: 'Poisson braisé entier' },
+  { src: '/gallery/261af8e5aa7817f724a58f1d4ddce712.jpg', alt: 'Soupe gombo aux crevettes' },
+  { src: '/gallery/6760a073cda74792dcca26b77308be02.jpg', alt: 'Foufou sauce épinards' },
+  { src: '/gallery/26ce13de163511463b35ee9c2a8112e1.jpg', alt: 'Nouilles sautées au bœuf' },
+  { src: '/gallery/de2ab21c7a9be6d899dcd20702a029a3.jpg', alt: 'Poisson braisé sauce tomate' },
+  { src: '/gallery/49bdf2bd3939250b7e233f8872bf3bb4.jpg', alt: 'Sauce rouge au poisson et riz' },
 ]
 
 const gridClasses = [
